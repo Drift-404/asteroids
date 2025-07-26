@@ -6,13 +6,22 @@ import random
 class Asteroid(CircleShape):
     def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
+        self.original_image = pygame.image.load("assets/asteroid.png").convert_alpha()
+        size = int(self.radius * 2)
+        self.original_image = pygame.transform.scale(self.original_image, (size, size))
+        
+        self.image = self.original_image
+        self.rotation = random.uniform(0, 360)
 
     def draw(self, screen):
-        pygame.draw.circle(screen, (255, 255, 255), self.position, self.radius, 2)
+        rotated_image = pygame.transform.rotate(self.original_image, self.rotation)
+        rect = rotated_image.get_rect(center=self.position)
+        screen.blit(rotated_image, rect)
 
     def update(self, dt, keys=None):
         self.position += self.velocity * dt
-
+        self.rotation += 20 * dt
+        self.wrap_pos()
     def split(self, group):
         self.kill()
         if self.radius <= ASTEROID_MIN_RADIUS:
